@@ -42,6 +42,8 @@ def give_dataloaders(dataset, opt):
     #Dataset selection
     if opt.dataset=='cub200':
         datasets = give_CUB200_datasets(opt)
+    elif opt.dataset=='brands':
+        datasets = give_Brands_datasets(opt)
     elif opt.dataset=='cars196':
         datasets = give_CARS196_datasets(opt)
     elif opt.dataset=='online_products':
@@ -76,6 +78,42 @@ def give_CUB200_datasets(opt):
         dict of PyTorch datasets for training, testing and evaluation.
     """
     image_sourcepath  = opt.source_path+'/images'
+    #Find available data classes.
+    image_classes = sorted([x for x in os.listdir(image_sourcepath) if '._' not in x], key=lambda x: int(x.split('.')[0]))
+    #Make a index-to-labelname conversion dict.
+    conversion    = {int(x.split('.')[0]):x.split('.')[-1] for x in image_classes}
+    #Generate a list of tuples (class_label, image_path)
+    image_list    = {int(key.split('.')[0]):sorted([image_sourcepath+'/'+key+'/'+x for x in os.listdir(image_sourcepath+'/'+key) if '._' not in x]) for key in image_classes}
+    image_list    = [[(key,img_path) for img_path in image_list[key]] for key in image_list.keys()]
+    image_list    = [x for y in image_list for x in y]
+
+    #Image-dict of shape {class_idx:[list of paths to images belong to this class] ...}
+    image_dict    = {}
+    for key, img_path in image_list:
+        key = key-1
+        if not key in image_dict.keys():
+            image_dict[key] = []
+        image_dict[key].append(img_path)
+
+    keys = sorted(list(image_dict.keys()))
+
+    #Following "Deep Metric Learning via Lifted Structured Feature Embedding", we use the first half of classes for training.
+    train,test = keys[:len(keys)//2], keys[len(keys)//2:]
+    train_image_dict, val_image_dict = {key:image_dict[key] for key in train},{key:image_dict[key] for key in test}
+
+
+    train_dataset = BaseTripletDataset(train_image_dict, opt, samples_per_class=opt.samples_per_class)
+    val_dataset   = BaseTripletDataset(val_image_dict,   opt, is_validation=True)
+    eval_dataset  = BaseTripletDataset(train_image_dict, opt, is_validation=True)
+
+    train_dataset.conversion = conversion
+    val_dataset.conversion   = conversion
+    eval_dataset.conversion  = conversion
+
+    return {'training':train_dataset, 'testing':val_dataset, 'evaluation':eval_dataset}
+
+def give_Brands_datasets(opt):
+    image_sourcepath  = opt.source_path+'/brands'
     #Find available data classes.
     image_classes = sorted([x for x in os.listdir(image_sourcepath) if '._' not in x], key=lambda x: int(x.split('.')[0]))
     #Make a index-to-labelname conversion dict.
