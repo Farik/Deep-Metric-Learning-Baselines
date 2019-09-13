@@ -286,7 +286,7 @@ for epoch in range(opt.n_epochs):
     ### Evaluate
     _ = model.eval()
     #Each dataset requires slightly different dataloaders.
-    if opt.dataset in ['cars196', 'cub200', 'online_products']:
+    if opt.dataset in ['cars196', 'cub200', 'online_products','brands']:
         eval_params = {'dataloader':dataloaders['testing'], 'model':model, 'opt':opt, 'epoch':epoch}
     elif opt.dataset=='in-shop':
         eval_params = {'query_dataloader':dataloaders['testing_query'], 'gallery_dataloader':dataloaders['testing_gallery'], 'model':model, 'opt':opt, 'epoch':epoch}

@@ -113,7 +113,7 @@ def give_CUB200_datasets(opt):
     return {'training':train_dataset, 'testing':val_dataset, 'evaluation':eval_dataset}
 
 def give_Brands_datasets(opt):
-    image_sourcepath  = opt.source_path+'/brands'
+    image_sourcepath  = opt.source_path+'/images'
     #Find available data classes.
     image_classes = sorted([x for x in os.listdir(image_sourcepath) if '._' not in x], key=lambda x: int(x.split('.')[0]))
     #Make a index-to-labelname conversion dict.
