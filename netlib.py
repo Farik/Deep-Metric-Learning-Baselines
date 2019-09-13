@@ -153,9 +153,9 @@ class EfficientNetWrapper(nn.Module):
 
         self.pars = opt
         if not opt.not_pretrained:
-            self.model = EfficientNet.from_name(opt.model_name)
-        else:
             self.model = EfficientNet.from_pretrained(opt.model_name)
+        else:
+            self.model = EfficientNet.from_name(opt.model_name)
 
         #rename_attr(self.model, '_fc', 'last_linear')
         setattr(self.model, 'last_linear', getattr(self.model, '_fc'))
