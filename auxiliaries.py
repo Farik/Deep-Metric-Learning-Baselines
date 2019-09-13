@@ -358,7 +358,7 @@ def recover_closest_one_dataset(feature_matrix_all, image_paths, save_path, n_im
 
     f,axes = plt.subplots(n_image_samples, n_closest+1)
     for i,(ax,plot_path) in enumerate(zip(axes.reshape(-1), sample_paths.reshape(-1))):
-        ax.imshow(np.array(Image.open(plot_path)))
+        ax.imshow(np.array(Image.open(plot_path).convert('RGB')))
         ax.set_xticks([])
         ax.set_yticks([])
         if i%(n_closest+1):
@@ -401,7 +401,7 @@ def recover_closest_inshop(query_feature_matrix_all, gallery_feature_matrix_all,
 
     f,axes = plt.subplots(n_image_samples, n_closest+1)
     for i,(ax,plot_path) in enumerate(zip(axes.reshape(-1), sample_paths.reshape(-1))):
-        ax.imshow(np.array(Image.open(plot_path)))
+        ax.imshow(np.array(Image.open(plot_path).convert('RGB')))
         ax.set_xticks([])
         ax.set_yticks([])
         if i%(n_closest+1):
