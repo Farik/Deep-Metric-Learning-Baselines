@@ -431,8 +431,10 @@ class BaseTripletDataset(Dataset):
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
         transf_list = []
         if not self.is_validation:
-            transf_list.extend([transforms.RandomResizedCrop(size=224) if opt.arch=='resnet50' else transforms.RandomResizedCrop(size=227),
-                                transforms.RandomHorizontalFlip(0.5)])
+            transf_list.extend([transforms.RandomResizedCrop(size=224) if opt.arch=='resnet50' else transforms.RandomResizedCrop(size=227)
+                                 ] )
+            if not opt.dataset=='brands':
+                transf_list.extend([transforms.RandomHorizontalFlip(0.5)]) 
         else:
             transf_list.extend([transforms.Resize(256),
                                 transforms.CenterCrop(224) if opt.arch=='resnet50' else transforms.CenterCrop(227)])
@@ -457,7 +459,7 @@ class BaseTripletDataset(Dataset):
         Returns:
             Checked PIL.Image img.
         """
-        if len(img.size)==2:
+        if len(img.size)==2 or img.mode!="RGB":
             img = img.convert('RGB')
         return img
 
