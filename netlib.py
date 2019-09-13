@@ -157,7 +157,8 @@ class EfficientNetWrapper(nn.Module):
         else:
             self.model = EfficientNet.from_pretrained(opt.model_name)
 
-        rename_attr(self.model, '_fc', 'last_linear')
+        #rename_attr(self.model, '_fc', 'last_linear')
+        setattr(self.model, 'last_linear', getattr(self.model, '_fc'))
 
         self.model.last_linear = nn.Linear(self.model.last_linear.in_features, opt.embed_dim)
 
