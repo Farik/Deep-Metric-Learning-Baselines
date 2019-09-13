@@ -25,6 +25,7 @@ import torchvision.models as models
 
 import googlenet
 
+from efficientnet_pytorch import EfficientNet
 
 
 """============================================================="""
@@ -80,6 +81,8 @@ def networkselect(opt):
         network =  GoogLeNet(opt)
     elif opt.arch == 'resnet50':
         network =  ResNet50(opt)
+    elif opt.arch == 'eff':
+        network = EfficientNetWrapper(opt)
     else:
         raise Exception('Network {} not available!'.format(opt.arch))
     return network
@@ -141,6 +144,36 @@ class GoogLeNet(nn.Module):
 
 
 """============================================================="""
+
+
+
+class EfficientNetWrapper(nn.Module):
+    def __init__(self, opt):
+        super(EfficientNetWrapper, self).__init__()
+
+        self.pars = opt
+        if not opt.not_pretrained:
+            self.model = EfficientNet.from_name(opt.model_name)
+        else:
+            self.model = EfficientNet.from_pretrained(opt.model_name)
+
+        rename_attr(self.model, '_fc', 'last_linear')
+
+        self.model.last_linear = nn.Linear(self.model.last_linear.in_features, opt.embed_dim)
+
+    def freeze_encoder(self):
+        for params in self.model.parameters():
+            params.requires_grad = False
+        self.model.last_linear.requires_grad = True
+
+    def unfreeze(self):
+        for params in self.model.parameters():
+            params.requires_grad = True
+
+    def forward(self, x):
+        return self.model(x)
+
+
 class ResNet50(nn.Module):
     """
     Container for ResNet50 s.t. it can be used for metric learning.
