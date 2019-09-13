@@ -172,7 +172,8 @@ class EfficientNetWrapper(nn.Module):
             params.requires_grad = True
 
     def forward(self, x):
-        return self.model(x)
+        mod_x = self.model(x)
+        return mod_x if self.pars.loss=='npair' else torch.nn.functional.normalize(mod_x, dim=-1)
 
 
 class ResNet50(nn.Module):
