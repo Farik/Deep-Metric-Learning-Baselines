@@ -158,14 +158,14 @@ class EfficientNetWrapper(nn.Module):
             self.model = EfficientNet.from_name(opt.model_name)
 
         #rename_attr(self.model, '_fc', 'last_linear')
-        setattr(self.model, 'last_linear', getattr(self.model, '_fc'))
 
-        self.model.last_linear = nn.Linear(self.model.last_linear.in_features, opt.embed_dim)
+        self.model._fc = nn.Linear(self.model._fc.in_features, opt.embed_dim)
+        setattr(self.model, 'last_linear', getattr(self.model, '_fc'))
 
     def freeze_encoder(self):
         for params in self.model.parameters():
             params.requires_grad = False
-        self.model.last_linear.requires_grad = True
+        self.model._fc.requires_grad = True
 
     def unfreeze(self):
         for params in self.model.parameters():
