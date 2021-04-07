@@ -257,8 +257,9 @@ def main(cli_args=None):
         base_optimizer    = torch.optim.Adam(to_optim)
         optimizer = base_optimizer
         if opt.one_cycle_policy:
-            print('1cycle policy scheduler in use')
-            optimizer = OneCycleLR(base_optimizer, num_steps=len(dataloaders['training']), lr_range=(opt.lr, opt.lr*10))
+            iterations = len(dataloaders['training']) * opt.n_epochs
+            print(f'1cycle policy scheduler in use for ${iterations} iterations')
+            optimizer = OneCycleLR(base_optimizer, num_steps=iterations, lr_range=(opt.lr, opt.lr/10))
 
         if opt.scheduler=='exp':
             scheduler    = torch.optim.lr_scheduler.ExponentialLR(base_optimizer, gamma=opt.gamma)
