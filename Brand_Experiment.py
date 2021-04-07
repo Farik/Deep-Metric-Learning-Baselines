@@ -186,7 +186,6 @@ def main(cli_args=None):
                 netlib.initialize_weights(model)
         #     model.apply(weight_init)
 
-        print(model.model._avg_pooling)
 
         print('{} Setup for {} with {} sampling on {} complete with #weights: {}'.format(opt.loss.upper(), opt.arch.upper(), opt.sampling.upper(), opt.dataset.upper(), aux.gimme_params(model)))
 
@@ -375,3 +374,5 @@ def main(cli_args=None):
     finally:
         run = neptune.get_last_run()
         run.stop()
+
+    return {'opt':opt, 'dataloaders':dataloaders, 'model':model}
