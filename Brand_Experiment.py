@@ -97,11 +97,11 @@ def main(cli_args=None):
     opt = parser.parse_args(cli_args)
 
     if opt.neptune_tags=="":
-        neptune.init(project=opt.neptune_project)
+        run =neptune.init(project=opt.neptune_project)
     else:
-        neptune.init(project=opt.neptune_project, tags= opt.neptune_tags.split(","))
+        run =neptune.init(project=opt.neptune_project, tags= opt.neptune_tags.split(","))
 
-    run = neptune.run() if opt.neptune_run=="" else neptune.run(opt.neptune_run)
+    #run = neptune.run() if opt.neptune_run=="" else neptune.run(opt.neptune_run)
 
 
     try:
