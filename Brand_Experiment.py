@@ -88,12 +88,18 @@ parser.add_argument('--experiment_name',    default='default', type=str, help='L
 parser.add_argument('--pooling',    default='gem', type=str, help='Use pooling')
 
 
+parser.add_argument('--neptune_project',    default='farik/brands', type=str, help='Neptune project to work with')
+parser.add_argument('--neptune_run',    default='', type=str, help='Neptune run to work with')
+parser.add_argument('--neptune_tags',    default='', type=str, help='Neptune experiment tag to work with')
+
+
 def main(cli_args=None):
     opt = parser.parse_args(cli_args)
 
-    run = neptune.init(
+    neptune.init(
         project=opt.neptune_project, tags=opt.neptune_tags.split(',')
     )
+    run = neptune.run(opt.neptune_run)
 
     try:
 
