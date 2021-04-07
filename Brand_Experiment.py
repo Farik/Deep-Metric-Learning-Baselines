@@ -96,12 +96,16 @@ parser.add_argument('--neptune_tags',    default='', type=str, help='Neptune exp
 def main(cli_args=None):
     opt = parser.parse_args(cli_args)
 
-    if opt.neptune_tags=="":
-        run =neptune.init(project=opt.neptune_project)
-    else:
-        run =neptune.init(project=opt.neptune_project, tags= opt.neptune_tags.split(","))
 
-    #run = neptune.run() if opt.neptune_run=="" else neptune.run(opt.neptune_run)
+    if opt.neptune_run=="":
+
+        if opt.neptune_tags=="":
+            run =neptune.init(project=opt.neptune_project)
+        else:
+            run =neptune.init(project=opt.neptune_project, tags= opt.neptune_tags.split(","))
+
+    else:
+        run = neptune.init(project=opt.neptune_project, run=opt.neptune_run)
 
 
     try:
@@ -151,40 +155,54 @@ def main(cli_args=None):
         opt.device = torch.device('cuda')
         #Depending on the choice opt.arch, networkselect() returns the respective network model
 
-        model      = netlib.networkselect(opt)
-        model.unfreeze()
-        # model.freeze_encoder()
-        if not opt.pretrained:
-            if len(opt.load_checkpoint)>0:
-                print("Load checkpoint "+opt.load_checkpoint)
-                checkpoint = torch.load(f'{opt.save_path}/{opt.load_checkpoint}/checkpoint.pth.tar')
+        checkpoint = False
+        if opt.neptune_run!="":
+            try:
+                print("Going to load neptune stored model checkpoint...")
+                model = netlib.networkselect(opt)
+                model.unfreeze()
+                run["train/model_weights"].download(f'{opt.save_path}/{opt.load_checkpoint}/neptune_checkpoint.pth.tar')
+                checkpoint = torch.load(f'{opt.save_path}/{opt.load_checkpoint}/neptune_checkpoint.pth.tar')
                 model.load_state_dict(checkpoint['state_dict'])
-            elif len(opt.load_head)>0:
-                print("Initalize weights for whole model")
-                # model.model._fc = nn.Sequential(
-                #         nn.Linear(model.model._fc.in_features, 512),
-                #                             nn.PReLU(),
-                #                             nn.Linear(512, 256),
-                # )
-                netlib.initialize_weights(model)
-                learned_weights = torch.load(opt.load_head)['model']
-                learn_state_dict = model.state_dict()
-                for name, param in learn_state_dict.items():
-                    if name in learned_weights:
-                        input_param = learned_weights[name]
-                        if input_param.shape == param.shape:
-                            param.copy_(input_param)
+                print("Loaded!")
+            except:
+                print("Unable to load neptune stored model checkpoint")
+
+        if opt.neptune_run=="" or not isinstance(checkpoint,dict):
+            model      = netlib.networkselect(opt)
+            model.unfreeze()
+            # model.freeze_encoder()
+            if not opt.pretrained:
+                if len(opt.load_checkpoint)>0:
+                    print("Load checkpoint "+opt.load_checkpoint)
+                    checkpoint = torch.load(f'{opt.save_path}/{opt.load_checkpoint}/checkpoint.pth.tar')
+                    model.load_state_dict(checkpoint['state_dict'])
+                elif len(opt.load_head)>0:
+                    print("Initalize weights for whole model")
+                    # model.model._fc = nn.Sequential(
+                    #         nn.Linear(model.model._fc.in_features, 512),
+                    #                             nn.PReLU(),
+                    #                             nn.Linear(512, 256),
+                    # )
+                    netlib.initialize_weights(model)
+                    learned_weights = torch.load(opt.load_head)['model']
+                    learn_state_dict = model.state_dict()
+                    for name, param in learn_state_dict.items():
+                        if name in learned_weights:
+                            input_param = learned_weights[name]
+                            if input_param.shape == param.shape:
+                                param.copy_(input_param)
+                            else:
+                                print('Shape mismatch at:', name, 'skipping')
                         else:
-                            print('Shape mismatch at:', name, 'skipping')
-                    else:
-                        print(f'{name} weight of the model not in pretrained weights')
-                print(f"Replace weight for {len(learned_weights)} layers from pretrained model")
-                model.load_state_dict(learn_state_dict)
-                netlib.initialize_weights(model.model._fc)
-            else:
-                print("Initalize weight")
-                netlib.initialize_weights(model)
-        #     model.apply(weight_init)
+                            print(f'{name} weight of the model not in pretrained weights')
+                    print(f"Replace weight for {len(learned_weights)} layers from pretrained model")
+                    model.load_state_dict(learn_state_dict)
+                    netlib.initialize_weights(model.model._fc)
+                else:
+                    print("Initalize weight")
+                    netlib.initialize_weights(model)
+            #     model.apply(weight_init)
 
 
         print('{} Setup for {} with {} sampling on {} complete with #weights: {}'.format(opt.loss.upper(), opt.arch.upper(), opt.sampling.upper(), opt.dataset.upper(), aux.gimme_params(model)))
@@ -369,7 +387,7 @@ def main(cli_args=None):
             my_data = my_data.drop(columns=['Epochs']).tail(1).squeeze().to_dict()
             for key, value in my_data.items():
                 run['eval/'+key].log(value)
-
+            run["train/model_weights"].upload(opt.save_path+'/checkpoint.pth.tar')
 
 
 
