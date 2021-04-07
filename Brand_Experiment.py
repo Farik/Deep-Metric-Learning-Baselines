@@ -166,6 +166,7 @@ def main(cli_args=None):
                 model.load_state_dict(checkpoint['state_dict'])
                 print("Loaded!")
             except:
+                checkpoint = False
                 print("Unable to load neptune stored model checkpoint")
 
         if opt.neptune_run=="" or not isinstance(checkpoint,dict):
