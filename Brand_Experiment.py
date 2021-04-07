@@ -99,7 +99,7 @@ def main(cli_args=None):
 
 
         dataset = opt.dataset
-        opt.savename = f'{dataset}_{opt.arch}_{opt.loss}_e{opt.n_epochs}_{opt.experiment_name}'
+        opt.savename = f'{opt.dataset_descriptor}_{opt.arch}_{opt.loss}_e{opt.n_epochs}_{opt.experiment_name}'
         if opt.not_pretrained:
             opt.savename += "_clean"
 
@@ -148,7 +148,7 @@ def main(cli_args=None):
         if not opt.pretrained:
             if len(opt.load_checkpoint)>0:
                 print("Load checkpoint "+opt.load_checkpoint)
-                checkpoint = torch.load(f'{opt.save_path}/brands/{opt.load_checkpoint}/checkpoint.pth.tar')
+                checkpoint = torch.load(f'{opt.save_path}/{opt.load_checkpoint}/checkpoint.pth.tar')
                 model.load_state_dict(checkpoint['state_dict'])
             elif len(opt.load_head)>0:
                 print("Initalize weights for whole model")
