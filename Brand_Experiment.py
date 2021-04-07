@@ -96,8 +96,9 @@ parser.add_argument('--neptune_tags',    default='', type=str, help='Neptune exp
 def main(cli_args=None):
     opt = parser.parse_args(cli_args)
 
+    opt.neptune_tags = [] if opt.neptune_tags=="" else opt.neptune_tags.split(",")
     neptune.init(
-        project=opt.neptune_project, tags=opt.neptune_tags.split(',')
+        project=opt.neptune_project, tags= opt.neptune_tags
     )
     run = neptune.run(opt.neptune_run)
 
