@@ -28,7 +28,9 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 parser = argparse.ArgumentParser()
 
 ####### Main Parameter: Dataset to use for Training
-parser.add_argument('--dataset',      default='brand',   type=str, help='Dataset to use.')
+parser.add_argument('--dataset',      default='brand',   type=str, help='Dataset structure to use.')
+parser.add_argument('--dataset_descriptor',      default='b100d100',   type=str, help='Dataset quality descriptor.')
+
 
 ### General Training Parameters
 parser.add_argument('--lr',                default=0.00001,  type=float, help='Learning Rate for network parameters.')
@@ -96,7 +98,7 @@ def main(cli_args=None):
     try:
 
 
-        dataset = opt.dataset_version
+        dataset = opt.dataset
         opt.savename = f'{dataset}_{opt.arch}_{opt.loss}_e{opt.n_epochs}_{opt.experiment_name}'
         if opt.not_pretrained:
             opt.savename += "_clean"
