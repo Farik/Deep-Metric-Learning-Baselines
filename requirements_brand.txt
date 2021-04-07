@@ -1,0 +1,6 @@
+pretrainedmodels
+efficientnet_pytorch
+faiss
+faiss-gpu
+mkl
+neptune-client

@@ -26,6 +26,8 @@ import torchvision.models as models
 import googlenet
 
 from efficientnet_pytorch import EfficientNet
+from pooling import GeM
+from normalization import L2N
 
 
 """============================================================="""
@@ -156,6 +158,10 @@ class EfficientNetWrapper(nn.Module):
             self.model = EfficientNet.from_pretrained(opt.model_name)
         else:
             self.model = EfficientNet.from_name(opt.model_name)
+
+        if opt.pooling == 'gem':
+            self.model._avg_pooling = nn.Sequential(GeM(), L2N())#,nn.ReLU()
+
 
         #rename_attr(self.model, '_fc', 'last_linear')
 

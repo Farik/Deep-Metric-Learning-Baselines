@@ -2,3 +2,4 @@ Training_Results
 __pycache__
 *.pyc
 test_runs.sh
+/.idea/
