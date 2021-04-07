@@ -310,8 +310,8 @@ def main(cli_args=None):
 
                 #Update weights using comp. gradients.
                 optimizer.step()
-                if i%25==0:
-                    print('lr:{0}, momentum:{1}'.format(optimizer.optimizer.param_groups[0]['lr'],optimizer.optimizer.param_groups[0]['momentum']))
+                # if i%25==0:
+                #     print('lr:{0}, momentum:{1}'.format(optimizer.optimizer.param_groups[0]['lr'],optimizer.optimizer.param_groups[0]['momentum']))
 
                 #Store loss per iteration.
                 loss_collect.append(loss.item())
