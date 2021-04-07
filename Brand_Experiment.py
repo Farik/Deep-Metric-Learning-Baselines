@@ -100,7 +100,9 @@ def main(cli_args=None):
     neptune.init(
         project=opt.neptune_project, tags= opt.neptune_tags
     )
-    run = neptune.run(opt.neptune_run)
+
+    run = neptune.run() if opt.neptune_run=="" else neptune.run(opt.neptune_run)
+
 
     try:
 
