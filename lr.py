@@ -1,6 +1,6 @@
+from __future__ import print_function, with_statement, division
 from torch.optim import Optimizer
 
-from __future__ import print_function, with_statement, division
 import copy
 import os
 import torch
