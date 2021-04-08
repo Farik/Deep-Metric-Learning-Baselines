@@ -209,7 +209,15 @@ def main(cli_args=None):
         print('{} Setup for {} with {} sampling on {} complete with #weights: {}'.format(opt.loss.upper(), opt.arch.upper(), opt.sampling.upper(), opt.dataset.upper(), aux.gimme_params(model)))
 
         #Push to Device
-        _          = model.to(opt.device)
+        #_          = model.to(opt.device)
+
+        if torch.cuda.device_count() > 1:
+            print("Let's use", torch.cuda.device_count(), "GPUs!")
+            # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+            model = nn.DataParallel(model)
+            # check bach multiplier
+        model.to(opt.device)
+        
         #Place trainable parameter in list of parameters to train
         to_optim   = [{'params':model.parameters(),'lr':opt.lr,'weight_decay':opt.decay}]
 
