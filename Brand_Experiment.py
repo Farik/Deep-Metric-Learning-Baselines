@@ -202,7 +202,12 @@ def main(cli_args=None):
                     #                             nn.Linear(512, 256),
                     # )
                     netlib.initialize_weights(model)
-                    learned_weights = torch.load(opt.load_head)['model']
+                    learned_weights = torch.load(opt.load_head)
+                    if 'model' in learned_weights.keys():
+                        learned_weights = learned_weights['model']
+                    elif 'state_dict' in learned_weights.keys():
+                        learned_weights = learned_weights['state_dict']
+
                     learn_state_dict = model.state_dict()
                     for name, param in learn_state_dict.items():
                         if name in learned_weights:
