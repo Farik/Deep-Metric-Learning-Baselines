@@ -167,7 +167,7 @@ def main(cli_args=None):
                 from collections import OrderedDict
                 new_state_dict = OrderedDict()
                 for k, v in checkpoint['state_dict'].items():
-                    name = k[7:] # remove `module.`
+                    name = k[7:] if k.startswith('module.') else k # remove `module.`
                     new_state_dict[name] = v
                 # load params
                 model.load_state_dict(new_state_dict)
@@ -189,7 +189,7 @@ def main(cli_args=None):
                     from collections import OrderedDict
                     new_state_dict = OrderedDict()
                     for k, v in checkpoint['state_dict'].items():
-                        name = k[7:] # remove `module.`
+                        name = k[7:] if k.startswith('module.') else k # remove `module.`
                         new_state_dict[name] = v
                     # load params
                     model.load_state_dict(new_state_dict)
