@@ -1,6 +1,6 @@
 pretrainedmodels
 efficientnet_pytorch
-faiss
-faiss-gpu
 mkl
+matplotlib
+sklearn
 neptune-client

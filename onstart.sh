@@ -1,4 +1,7 @@
 #!/bin/bash
-apt-get -yes install curl
+apt-get update
+apt-get --yes install curl
 apt-get --yes install git
-conda --yes  install -c conda-forge faiss
+conda install -y -c conda-forge faiss
+#conda install -y -c conda-forge faiss-gpu
+!nvidia-smi --format=csv --query-gpu=index,name,driver_version,memory.total,memory.used,memory.free
