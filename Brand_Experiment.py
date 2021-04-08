@@ -163,7 +163,15 @@ def main(cli_args=None):
                 model.unfreeze()
                 run["train/model_weights"].download(f'{opt.save_path}/{opt.load_checkpoint}/neptune_checkpoint.pth.tar')
                 checkpoint = torch.load(f'{opt.save_path}/{opt.load_checkpoint}/neptune_checkpoint.pth.tar')
-                model.load_state_dict(checkpoint['state_dict'])
+
+                from collections import OrderedDict
+                new_state_dict = OrderedDict()
+                for k, v in checkpoint['state_dict'].items():
+                    name = k[7:] # remove `module.`
+                    new_state_dict[name] = v
+                # load params
+                model.load_state_dict(new_state_dict)
+
                 print("Loaded!")
             except:
                 checkpoint = False
@@ -177,7 +185,15 @@ def main(cli_args=None):
                 if len(opt.load_checkpoint)>0:
                     print("Load checkpoint "+opt.load_checkpoint)
                     checkpoint = torch.load(f'{opt.save_path}/{opt.load_checkpoint}/checkpoint.pth.tar')
-                    model.load_state_dict(checkpoint['state_dict'])
+
+                    from collections import OrderedDict
+                    new_state_dict = OrderedDict()
+                    for k, v in checkpoint['state_dict'].items():
+                        name = k[7:] # remove `module.`
+                        new_state_dict[name] = v
+                    # load params
+                    model.load_state_dict(new_state_dict)
+
                 elif len(opt.load_head)>0:
                     print("Initalize weights for whole model")
                     # model.model._fc = nn.Sequential(
